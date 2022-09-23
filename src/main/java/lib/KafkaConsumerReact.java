@@ -6,28 +6,43 @@ import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
 import reactor.kafka.receiver.ReceiverRecord;
 
+import java.util.function.Predicate;
+
 public class KafkaConsumerReact<K, V> implements Consumer<K, V> {
-    private final KafkaReceiver<Integer, String> receiver;
+    private final KafkaReceiver<K, V> receiver;
     private Disposable disposable;
 
     public KafkaConsumerReact(ConsumerConfiguration consumerConfiguration) {
         if (consumerConfiguration == null) throw new IllegalArgumentException("The consumer configuration is null");
 
-        ReceiverOptions<Integer, String> receiverOptions = ReceiverOptions.<Integer, String>create(consumerConfiguration.config()).subscription(consumerConfiguration.topics());
+        ReceiverOptions<K, V> receiverOptions = ReceiverOptions.<K, V>create(consumerConfiguration.config()).subscription(consumerConfiguration.topics());
         receiver = KafkaReceiver.create(receiverOptions);
     }
 
     @Override
     public void startConsume(ConsumerListener<K, V> consumerListener) {
-        Flux<ReceiverRecord<Integer, String>> inboundFlux = receiver.receive();
+        Flux<ReceiverRecord<K, V>> inboundFlux = receiver.receive();
 
         disposable = inboundFlux
                 .subscribe(r -> {
 //                    System.out.printf("Received message: %s\n", r);
-                    consumerListener.onConsume(new ConsumerDataRecord(r.key(), r.value(), r.topic(), r.timestamp()));
+                    consumerListener.onConsume(new ConsumerDataRecord<K, V>(r.key(), r.value(), r.topic(), r.timestamp()));
                     r.receiverOffset().acknowledge();
                 });
 
+    }
+
+    @Override
+    public void startConsume(ConsumerListener<K, V> consumerListener, Predicate<V> valuePredicate) {
+        Flux<ReceiverRecord<K, V>> inboundFlux = receiver.receive();
+
+
+        disposable = inboundFlux
+                .filter(r -> valuePredicate.test(r.value()))
+                .subscribe(r -> {
+                    consumerListener.onConsume(new ConsumerDataRecord<K, V>(r.key(), r.value(), r.topic(), r.timestamp()));
+                    r.receiverOffset().acknowledge();
+                });
     }
 
     @Override

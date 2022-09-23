@@ -12,10 +12,11 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         Map<String, Object> consumerProps = new HashMap<>();
         final String topicName = "state-changes";
+        final String groupID = "cg-snaptech-dev";
+        String bootstrapServer = "eh-ne-prod-ds-streams-emop.servicebus.windows.net:9093";
 
-        final String bootstrapServer = "eh-ne-prod-ds-streams-emop.servicebus.windows.net:9093";
+        
         final String pwd = "{FULL CONNECTION STRING}"; // add full connection string emop
-        final String groupID = "cg-snaptech-test";
         consumerProps.put(ConsumerConfigurationProperties.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         consumerProps.put(ConsumerConfigurationProperties.GROUP_ID_CONFIG, groupID);
         consumerProps.put(ConsumerConfigurationProperties.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
@@ -30,12 +31,7 @@ public class Main {
 
         Consumer<Integer, String> kafkaConsumerReact = Consumer.createDefault(new ConsumerConfiguration(consumerProps, List.of(topicName)));
 
-        kafkaConsumerReact.startConsume(new ConsumerListener<Integer, String>() {
-            @Override
-            public void onConsume(ConsumerDataRecord<Integer, String> consumerDataRecord) {
-                System.out.println("Key: " + consumerDataRecord.key() + " value: " + consumerDataRecord.value());
-            }
-        });
+        kafkaConsumerReact.startConsume(consumerDataRecord -> System.out.println("Key: " + consumerDataRecord.key() + " value: " + consumerDataRecord.value()), s -> s.contains("event_id"));
 
         //Producer definition
         /*
