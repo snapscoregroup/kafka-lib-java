@@ -22,9 +22,8 @@ public class KafkaConsumerReact<K, V> implements Consumer<K, V> {
         Flux<ReceiverRecord<Integer, String>> inboundFlux = receiver.receive();
 
         disposable = inboundFlux
-                .log()
                 .subscribe(r -> {
-                    System.out.printf("Received message: %s\n", r);
+//                    System.out.printf("Received message: %s\n", r);
                     consumerListener.onConsume(new ConsumerDataRecord(r.key(), r.value(), r.topic(), r.timestamp()));
                     r.receiverOffset().acknowledge();
                 });
