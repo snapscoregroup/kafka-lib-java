@@ -9,13 +9,12 @@ import java.util.Map;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         Map<String, Object> consumerProps = new HashMap<>();
         final String topicName = "state-changes";
-        final String groupID = "cg-snaptech-dev";
+        final String groupID = "cg-snaptech-prod";
         String bootstrapServer = "eh-ne-prod-ds-streams-emop.servicebus.windows.net:9093";
 
-        
         final String pwd = "{FULL CONNECTION STRING}"; // add full connection string emop
         consumerProps.put(ConsumerConfigurationProperties.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         consumerProps.put(ConsumerConfigurationProperties.GROUP_ID_CONFIG, groupID);
@@ -31,7 +30,10 @@ public class Main {
 
         Consumer<Integer, String> kafkaConsumerReact = Consumer.createDefault(new ConsumerConfiguration(consumerProps, List.of(topicName)));
 
-        kafkaConsumerReact.startConsume(consumerDataRecord -> System.out.println("Key: " + consumerDataRecord.key() + " value: " + consumerDataRecord.value()), s -> s.contains("event_id"));
+        kafkaConsumerReact.startConsume(consumerDataRecord -> {
+                    System.out.println(consumerDataRecord.value());
+                },
+                s -> s.contains("event_id") && s.contains("price update"));
 
         //Producer definition
         /*
@@ -46,7 +48,7 @@ public class Main {
 
 
 //        producer.close();
-//        kafkaConsumerReact.close();
+        kafkaConsumerReact.close();
     }
 
 }

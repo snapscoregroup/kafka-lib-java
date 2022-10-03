@@ -4,6 +4,7 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
+import reactor.kafka.receiver.ReceiverPartition;
 import reactor.kafka.receiver.ReceiverRecord;
 
 import java.util.function.Predicate;
@@ -15,7 +16,9 @@ public class KafkaConsumerReact<K, V> implements Consumer<K, V> {
     public KafkaConsumerReact(ConsumerConfiguration consumerConfiguration) {
         if (consumerConfiguration == null) throw new IllegalArgumentException("The consumer configuration is null");
 
-        ReceiverOptions<K, V> receiverOptions = ReceiverOptions.<K, V>create(consumerConfiguration.config()).subscription(consumerConfiguration.topics());
+        ReceiverOptions<K, V> receiverOptions = ReceiverOptions.<K, V>create(consumerConfiguration.config())
+                .addAssignListener(partitions -> partitions.forEach(ReceiverPartition::seekToEnd))
+                .subscription(consumerConfiguration.topics());
         receiver = KafkaReceiver.create(receiverOptions);
     }
 
