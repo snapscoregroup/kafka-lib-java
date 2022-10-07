@@ -3,8 +3,13 @@ package lib;
 /**
  * Represents an outgoing record. Along with the record to send to Kafka.
  * Type parameters:
- * <K> – Outgoing record key type
- * <V> – Outgoing record value type
+ *
+ * @param topic     Topic to which record is sent
+ * @param partition The partition to which the record is sent. If null, the partitioner configured
+ *                  for the {@link Producer} will be used to choose the partition.
+ * @param key       <K> – Outgoing record key type
+ * @param value     <V> – Outgoing record value type
+ * @param timestamp The timestamp of the record. If null, the current timestamp will be assigned by the producer.
  */
 public final record ProducerDataRecord<K, V>(String topic, Integer partition, K key, V value, Long timestamp) {
 }
