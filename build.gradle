@@ -7,7 +7,7 @@ plugins {
 }
 
 group 'com.sts'
-version "1.0.0"
+version "${JAR_VERSION}"
 
 repositories {
     mavenCentral()
