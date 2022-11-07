@@ -1,12 +1,39 @@
 plugins {
+    // Apply the java-library plugin for API and implementation separation.
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'maven-publish'
+    id "com.jfrog.artifactory" version "4.28.2"
     id 'java'
 }
 
+group 'com.sts'
+version "${JAR_VERSION}"
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://deploy.snapscore.dev/artifactory/libs-snapshot'
+        credentials {
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+    }
+    maven {
+        url 'https://deploy.snapscore.dev/artifactory/libs-releases'
+        credentials {
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+    }
+    maven {
+        name = "GitHubPackages"
+        url 'https://maven.pkg.github.com/snapscoregroup/*'
+        credentials {
+            username = "${github_user}"
+            password = "${github_password}"
+        }
+    }
 }
-
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
@@ -14,7 +41,67 @@ dependencies {
 
     implementation 'io.projectreactor.kafka:reactor-kafka:1.3.12'
 
-    implementation 'org.slf4j:slf4j-simple:2.0.0'
+    implementation 'org.slf4j:slf4j-simple:2.0.3'
+}
+
+shadowJar {
+    archiveBaseName = project.name
+    classifier = ''
+    archiveVersion = version
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'PROTOBUF',
+                'Implementation-Version': version
+    }
+}
+
+// Allows the Fat Jar to be uploaded to Artifactory
+artifacts {
+    archives shadowJar
+}
+artifactoryPublish {
+    dependsOn shadowJar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+artifactory {
+    //The base Artifactory URL if not overridden by the publisher/resolver
+    contextUrl = "https://deploy.snapscore.dev/artifactory"
+    publish {
+        //A closure defining publishing information
+        repository {
+            // The Artifactory repository key to publish to, ex. 'libs-snapshot'
+            repoKey = "${repo}"
+
+            // The publisher user name
+            username = "${artifactory_user}"
+
+            // The publisher password
+            password = "${artifactory_password}"
+        }
+        publishArtifacts = true
+        publishPom = true
+        defaults {
+            publications('mavenJava')
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
 }
 
 test {
