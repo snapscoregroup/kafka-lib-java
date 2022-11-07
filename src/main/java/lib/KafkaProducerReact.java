@@ -26,7 +26,7 @@ public final class KafkaProducerReact<K, V> implements Producer<K, V> {
 
         sender.send(tFlux)
                 .doOnError(Throwable::printStackTrace)
-                .doOnNext(r -> System.out.printf("Message #%d send response: %s\n", r.correlationMetadata(), r.recordMetadata()))
+                .doOnNext(r -> System.out.printf("Message send response: %s\n", r.recordMetadata()))
                 .subscribe();
     }
 
@@ -37,7 +37,7 @@ public final class KafkaProducerReact<K, V> implements Producer<K, V> {
 
         sender.send(senderRecordFlux)
                 .doOnError(Throwable::printStackTrace)
-                .doOnNext(r -> System.out.printf("Message #%d send response: %s\n", r.correlationMetadata(), r.recordMetadata()))
+                .doOnNext(r -> System.out.printf("Message send response: %s\n", r.recordMetadata()))
                 .subscribe();
     }
 
