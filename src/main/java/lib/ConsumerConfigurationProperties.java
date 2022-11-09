@@ -11,5 +11,6 @@ public class ConsumerConfigurationProperties {
     public static final String SECURITY_PROTOCOL = CommonConfigs.SECURITY_PROTOCOL;
     public static final String SASL_MECHANISM = CommonConfigs.SASL_MECHANISM;
     public static final String SASL_JAAS_CONFIG = "sasl.jaas.config";
+    public static final String MAX_REQUEST_SIZE_CONFIG = CommonConfigs.MAX_REQUEST_SIZE_CONFIG;
 
 }
