@@ -9,11 +9,11 @@ import reactor.kafka.receiver.ReceiverRecord;
 
 import java.util.function.Predicate;
 
-public class KafkaConsumerReact<K, V> implements Consumer<K, V> {
+final class KafkaConsumerReact<K, V> implements Consumer<K, V> {
     private final KafkaReceiver<K, V> receiver;
     private Disposable disposable;
 
-    public KafkaConsumerReact(ConsumerConfiguration consumerConfiguration) {
+    KafkaConsumerReact(ConsumerConfiguration consumerConfiguration) {
         if (consumerConfiguration == null) throw new IllegalArgumentException("The consumer configuration is null");
 
         ReceiverOptions<K, V> receiverOptions = ReceiverOptions.<K, V>create(consumerConfiguration.config())

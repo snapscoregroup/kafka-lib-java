@@ -7,12 +7,12 @@ import reactor.kafka.sender.SenderRecord;
 
 import java.util.stream.Stream;
 
-public final class KafkaProducerReact<K, V> implements Producer<K, V> {
+final class KafkaProducerReact<K, V> implements Producer<K, V> {
 //    public static final Logger log = LoggerFactory.getLogger(KafkaProducerReact.class);
 
     private final KafkaSender<K, V> sender;
 
-    public KafkaProducerReact(ProducerConfiguration producerConfiguration) {
+    KafkaProducerReact(ProducerConfiguration producerConfiguration) {
         SenderOptions<K, V> senderOptions =
                 SenderOptions.<K, V>create(producerConfiguration.config())
                         .maxInFlight(1024);
