@@ -9,8 +9,6 @@ plugins {
 group 'com.sts'
 version "${JAR_VERSION}"
 
-apply plugin: 'java-library'
-
 repositories {
     mavenCentral()
     maven {
