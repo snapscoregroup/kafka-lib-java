@@ -43,6 +43,7 @@ dependencies {
 
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 }
 
 shadowJar {
