@@ -1,13 +1,15 @@
 plugins {
     // Apply the java-library plugin for API and implementation separation.
+    id 'java-library'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
     id 'maven-publish'
     id "com.jfrog.artifactory" version "4.28.2"
-    id 'java'
 }
 
 group 'com.sts'
 version "${JAR_VERSION}"
+
+apply plugin: 'java-library'
 
 repositories {
     mavenCentral()
@@ -41,8 +43,9 @@ dependencies {
 
     implementation 'io.projectreactor.kafka:reactor-kafka:1.3.13'
 
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.11'
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.11'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.36'
     implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
 }
 
