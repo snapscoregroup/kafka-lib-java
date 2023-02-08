@@ -1,6 +1,8 @@
 package lib;
 
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Header;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import reactor.core.publisher.Flux;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
@@ -24,7 +26,8 @@ final class KafkaProducerReact<K, V> implements Producer<K, V> {
 
     @Override
     public void send(ProducerDataRecord<K, V> producerDataRecord) {
-        var producerRecord = new ProducerRecord<K, V>(producerDataRecord.topic(), producerDataRecord.partition(), producerDataRecord.timestamp(), producerDataRecord.key(), producerDataRecord.value(), List.of());
+        var headers = getHeaders(producerDataRecord);
+        var producerRecord = new ProducerRecord<K, V>(producerDataRecord.topic(), producerDataRecord.partition(), producerDataRecord.timestamp(), producerDataRecord.key(), producerDataRecord.value(), headers);
         final SenderRecord<K, V, K> record = SenderRecord.create(producerRecord, producerDataRecord.key());
 
         final Flux<SenderRecord<K, V, K>> tFlux = Flux.just(record);
@@ -38,7 +41,11 @@ final class KafkaProducerReact<K, V> implements Producer<K, V> {
     @Override
     public void send(Stream<ProducerDataRecord<K, V>> dataRecordStream) {
         final Flux<SenderRecord<K, V, K>> senderRecordFlux = Flux.fromStream(dataRecordStream)
-                .map(producerDataRecord -> SenderRecord.create(producerDataRecord.topic(), producerDataRecord.partition(), producerDataRecord.timestamp(), producerDataRecord.key(), producerDataRecord.value(), producerDataRecord.key()));
+                .map(producerDataRecord -> {
+                    var headers = getHeaders(producerDataRecord);
+                    var producerRecord = new ProducerRecord<K, V>(producerDataRecord.topic(), producerDataRecord.partition(), producerDataRecord.timestamp(), producerDataRecord.key(), producerDataRecord.value(), headers);
+                    return SenderRecord.create(producerRecord, producerDataRecord.key());
+                });
 
         sender.send(senderRecordFlux)
                 .doOnError(Throwable::printStackTrace)
@@ -50,4 +57,12 @@ final class KafkaProducerReact<K, V> implements Producer<K, V> {
     public void close() {
         sender.close();
     }
+
+    private static <K, V> List<Header> getHeaders(ProducerDataRecord<K, V> producerDataRecord) {
+        if (producerDataRecord.headers() == null) return List.of();
+        return producerDataRecord.headers().stream().map(header -> new RecordHeader(header.key(), header.value()))
+                .map(Header.class::cast)
+                .toList();
+    }
+
 }
