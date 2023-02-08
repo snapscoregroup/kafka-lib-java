@@ -10,6 +10,10 @@ package lib;
  * @param key       <K> – Outgoing record key type
  * @param value     <V> – Outgoing record value type
  * @param timestamp The timestamp of the record. If null, the current timestamp will be assigned by the producer.
+ * @param headers   The headers can contain another information's
  */
-public final record ProducerDataRecord<K, V>(String topic, Integer partition, K key, V value, Long timestamp) {
+public record ProducerDataRecord<K, V>(String topic, Integer partition, K key, V value, Long timestamp,
+                                       Iterable<ProducerHeader> headers) {
+
+
 }
