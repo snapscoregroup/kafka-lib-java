@@ -15,5 +15,7 @@ package lib;
 public record ProducerDataRecord<K, V>(String topic, Integer partition, K key, V value, Long timestamp,
                                        Iterable<ProducerHeader> headers) {
 
-
+    ProducerDataRecord(String topic, Integer partition, K key, V value, Long timestamp) {
+        this(topic, partition, key, value, timestamp, null);
+    }
 }
