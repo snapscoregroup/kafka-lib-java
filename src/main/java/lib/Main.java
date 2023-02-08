@@ -50,7 +50,7 @@ public class Main {
         Producer<Integer, String> producer = Producer.createDefault(new ProducerConfiguration(prodProps));
 
         List<ProducerHeader> headers = List.of(new ProducerDataRecordHeader("retention.ms", "1000".getBytes(StandardCharsets.UTF_8)));
-        final List<ProducerDataRecord<Integer, String>> records = List.of(new ProducerDataRecord<>("Testretention", 0, 1, "Test 100", 1L),
+        final List<ProducerDataRecord<Integer, String>> records = List.of(new ProducerDataRecord<>("Testretention", 0, 1, "Test 100", 1L, headers),
                 new ProducerDataRecord<>(topicName, 0, 2, "Test 2", 2L, List.of()));
 
         producer.send(records.stream());
