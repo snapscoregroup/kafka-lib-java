@@ -58,7 +58,7 @@ final class KafkaProducerReact<K, V> implements Producer<K, V> {
         sender.close();
     }
 
-    private static <K, V> List<Header> getHeaders(ProducerDataRecord<K, V> producerDataRecord) {
+    private <K, V> List<Header> getHeaders(ProducerDataRecord<K, V> producerDataRecord) {
         if (producerDataRecord.headers() == null) return List.of();
         return producerDataRecord.headers().stream().map(header -> new RecordHeader(header.key(), header.value()))
                 .map(Header.class::cast)
