@@ -19,7 +19,7 @@ final class KafkaProducerReact<K, V> implements Producer<K, V> {
     KafkaProducerReact(ProducerConfiguration producerConfiguration) {
         SenderOptions<K, V> senderOptions =
                 SenderOptions.<K, V>create(producerConfiguration.config())
-                        .maxInFlight(10*1024);
+                        .maxInFlight(1024);
 
         sender = KafkaSender.create(senderOptions);
     }
