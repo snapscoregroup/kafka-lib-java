@@ -4,6 +4,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.Header;
 import org.apache.kafka.common.header.internals.RecordHeader;
 import reactor.core.publisher.Flux;
+import reactor.core.scheduler.Schedulers;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
 import reactor.kafka.sender.SenderRecord;
@@ -19,6 +20,7 @@ final class KafkaProducerReact<K, V> implements Producer<K, V> {
     KafkaProducerReact(ProducerConfiguration producerConfiguration) {
         SenderOptions<K, V> senderOptions =
                 SenderOptions.<K, V>create(producerConfiguration.config())
+                        .scheduler(Schedulers.newParallel("kafka_sender", 4))
                         .maxInFlight(1024);
 
         sender = KafkaSender.create(senderOptions);
