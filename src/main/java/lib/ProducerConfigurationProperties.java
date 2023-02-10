@@ -16,4 +16,5 @@ public class ProducerConfigurationProperties {
     public static final String SASL_MECHANISM = CommonConfigs.SASL_MECHANISM;
     public static final String SASL_JAAS_CONFIG = "sasl.jaas.config";
     public static final String MAX_REQUEST_SIZE_CONFIG = CommonConfigs.MAX_REQUEST_SIZE_CONFIG;
+    public static final String BUFFER_MEMORY_CONFIG = CommonConfigs.BUFFER_MEMORY_CONFIG;
 }

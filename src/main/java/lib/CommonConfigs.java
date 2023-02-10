@@ -16,4 +16,6 @@ public class CommonConfigs {
     public static final String SASL_MECHANISM = "sasl.mechanism";
 
     public static final String MAX_REQUEST_SIZE_CONFIG = "max.request.size";
+
+    public static final String BUFFER_MEMORY_CONFIG = "buffer.memory";
 }
