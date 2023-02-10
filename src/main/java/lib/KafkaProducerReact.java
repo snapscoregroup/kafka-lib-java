@@ -10,7 +10,6 @@ import reactor.kafka.sender.SenderOptions;
 import reactor.kafka.sender.SenderRecord;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 final class KafkaProducerReact<K, V> implements Producer<K, V> {
 //    public static final Logger log = LoggerFactory.getLogger(KafkaProducerReact.class);
@@ -41,8 +40,8 @@ final class KafkaProducerReact<K, V> implements Producer<K, V> {
     }
 
     @Override
-    public void send(Stream<ProducerDataRecord<K, V>> dataRecordStream) {
-        final Flux<SenderRecord<K, V, K>> senderRecordFlux = Flux.fromStream(dataRecordStream)
+    public void send(List<ProducerDataRecord<K, V>> dataRecords) {
+        final Flux<SenderRecord<K, V, K>> senderRecordFlux = Flux.fromStream(dataRecords.stream())
                 .map(producerDataRecord -> {
                     var headers = getHeaders(producerDataRecord);
                     var producerRecord = new ProducerRecord<K, V>(producerDataRecord.topic(), producerDataRecord.partition(), producerDataRecord.timestamp(), producerDataRecord.key(), producerDataRecord.value(), headers);

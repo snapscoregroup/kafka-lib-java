@@ -53,7 +53,7 @@ public class Main {
         final List<ProducerDataRecord<Integer, String>> records = List.of(new ProducerDataRecord<>("Testretention", 0, 1, "Test 100", 1L, List.of()),
                 new ProducerDataRecord<>(topicName, 0, 2, "Test 2", 2L, List.of()));
 
-        producer.send(records.stream());
+        producer.send(records);
 
 
 //        Thread.sleep(5000);
