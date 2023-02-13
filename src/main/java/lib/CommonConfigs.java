@@ -14,4 +14,5 @@ public class CommonConfigs {
     public static final String BUFFER_MEMORY_CONFIG = "buffer.memory";
     public static final String COMPRESSION_TYPE_CONFIG = "compression.type";
     public static final String COMPRESSION_GZIP = "gzip";
+    public static final String BATCH_SIZE_CONFIG = "batch.size";
 }
