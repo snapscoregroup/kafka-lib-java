@@ -19,7 +19,6 @@ final class KafkaProducerReact<K, V> implements Producer<K, V> {
     KafkaProducerReact(ProducerConfiguration producerConfiguration) {
         SenderOptions<K, V> senderOptions =
                 SenderOptions.<K, V>create(producerConfiguration.config())
-                        .scheduler(Schedulers.newParallel("kafka_sender", 4))
                         .maxInFlight(1024);
 
         sender = KafkaSender.create(senderOptions);
