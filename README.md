@@ -1,6 +1,6 @@
-# kafka-lib
+# kafka-lib-java
 
-This library encapsulates publishing and consuming messages from Kafka through `reactor-kafka`.
+This library encapsulates publishing and consuming messages from Kafka through `reactor-kafka` in Java.
 
 **Consumer usage:** 
 ```java
