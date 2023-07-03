@@ -1,38 +1,38 @@
-plugins {
-    // Apply the java-library plugin for API and implementation separation.
-    id 'java-library'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'maven-publish'
-    id "com.jfrog.artifactory" version "4.28.2"
+//file:noinspection GroovyUnusedAssignment
+//file:noinspection GrDeprecatedAPIUsage
+group 'com.snapscore'
+version "${JAR_VERSION}"
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'org.owasp:dependency-check-gradle:5.0.0'
+
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
+
+        classpath "gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0"
+    }
 }
 
-group 'com.sts'
-version "${JAR_VERSION}"
+apply plugin: 'java-library'
+apply plugin: 'idea'
+apply plugin: 'maven-publish'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+sourceCompatibility = 20.0
+targetCompatibility = 20.0
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://deploy.snapscore.dev/artifactory/libs-snapshot'
-        credentials {
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-        }
-    }
-    maven {
-        url 'https://deploy.snapscore.dev/artifactory/libs-releases'
-        credentials {
-            username = "${artifactory_user}"
-            password = "${artifactory_password}"
-        }
-    }
-    maven {
-        name = "GitHubPackages"
-        url 'https://maven.pkg.github.com/snapscoregroup/*'
-        credentials {
-            username = "${github_user}"
-            password = "${github_password}"
-        }
-    }
+}
+
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
 dependencies {
@@ -40,58 +40,6 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 
     implementation 'io.projectreactor.kafka:reactor-kafka:1.3.17'
-}
-
-shadowJar {
-    archiveBaseName = project.name
-    classifier = ''
-    archiveVersion = version
-}
-
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'PROTOBUF',
-                'Implementation-Version': version
-    }
-}
-
-// Allows the Fat Jar to be uploaded to Artifactory
-artifacts {
-    archives shadowJar
-}
-artifactoryPublish {
-    dependsOn shadowJar
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            from components.java
-        }
-    }
-}
-
-artifactory {
-    //The base Artifactory URL if not overridden by the publisher/resolver
-    contextUrl = "https://deploy.snapscore.dev/artifactory"
-    publish {
-        //A closure defining publishing information
-        repository {
-            // The Artifactory repository key to publish to, ex. 'libs-snapshot'
-            repoKey = "${repo}"
-
-            // The publisher user name
-            username = "${artifactory_user}"
-
-            // The publisher password
-            password = "${artifactory_password}"
-        }
-        publishArtifacts = true
-        publishPom = true
-        defaults {
-            publications('mavenJava')
-        }
-    }
 }
 
 test {
@@ -105,3 +53,58 @@ test {
 test {
     useJUnitPlatform()
 }
+
+shadowJar {
+    archiveBaseName = project.name
+    archiveClassifier = ''
+    archiveVersion = version
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'kafka-lib',
+                'Implementation-Version': version
+    }
+}
+
+// Allows the Fat Jar to be uploaded to Artifactory
+artifacts {
+    archives shadowJar
+    archives jar
+}
+
+configurations {
+    fatJarRuntimeElements {
+        canBeResolved = false
+        canBeConsumed = true
+        attributes {
+            attribute(Usage.USAGE_ATTRIBUTE, objects.named(Usage, Usage.JAVA_RUNTIME))
+            attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category, Category.LIBRARY))
+            attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, objects.named(LibraryElements, LibraryElements.JAR))
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling, Bundling.EMBEDDED))
+        }
+        outgoing.artifact(shadowJar)
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/snapscoregroup/kafka-lib-java")
+            credentials(HttpHeaderCredentials) {
+                name "Authorization"
+                value "Bearer ${System.getenv("GITHUB_TOKEN")}"
+            }
+            authentication {
+                header(HttpHeaderAuthentication)
+            }
+        }
+    }
+}
+

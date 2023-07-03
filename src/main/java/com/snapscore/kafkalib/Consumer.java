@@ -1,4 +1,4 @@
-package lib;
+package com.snapscore.kafkalib;
 
 import java.util.function.Predicate;
 
