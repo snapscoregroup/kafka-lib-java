@@ -1,14 +1,9 @@
 name: kafka-lib-ci
 
-on:
-  push:
-    inputs:
-      version:
-        type: string
-        required: true
+on: push
 
 jobs:
-  publish:
+  build:
     # OS
     runs-on: ubuntu-22.04
     steps:
@@ -21,6 +16,9 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: '20'
+
+    - name: Build
+      run: ./gradlew clean build -PJAR_VERSION=${{ github.ref_name }}
 
     - name: Publish
       if: github.ref_type == 'tag'
