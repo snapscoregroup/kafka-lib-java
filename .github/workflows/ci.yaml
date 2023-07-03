@@ -30,8 +30,6 @@ jobs:
       if: github.ref_name == 'cleanup'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: ./gradlew publish -PJAR_VERSION=${{ inputs.version }}
-      with:
-        #        version: ${{ github.ref_name }}
-        version: '0.0.1'
+      run: ./gradlew publish -PJAR_VERSION=0.0.1
+      #run: ./gradlew publish -PJAR_VERSION=${{ github.ref_name }}
 
