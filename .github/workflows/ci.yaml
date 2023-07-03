@@ -8,7 +8,7 @@ on:
         required: true
 
 jobs:
-  build:
+  publish:
     # OS
     runs-on: ubuntu-22.04
     steps:
@@ -22,14 +22,11 @@ jobs:
         distribution: 'zulu'
         java-version: '20'
 
-    - name: Gradle build
-      run: ./gradlew clean build
-
     - name: Publish
 #      if: github.ref_type == 'tag'
       if: github.ref_name == 'cleanup'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: ./gradlew publish -PJAR_VERSION=0.0.1
+      run: ./gradlew clean build publish -PJAR_VERSION=0.0.1
       #run: ./gradlew publish -PJAR_VERSION=${{ github.ref_name }}
 
