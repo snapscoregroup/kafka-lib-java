@@ -1,4 +1,4 @@
-package lib;
+package com.snapscore.kafkalib;
 
 import java.util.List;
 import java.util.Map;

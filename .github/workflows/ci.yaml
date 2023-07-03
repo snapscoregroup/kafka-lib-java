@@ -1,46 +1,32 @@
 name: kafka-lib-ci
 
-on:
-  push:
-  pull_request:
-  release:
-    types:
-      - published
+on: push
 
 jobs:
   build:
     # OS
-    runs-on: self-hosted
-    # Steps: sequence of tasks that will be executed as part of the job
+    runs-on: ubuntu-22.04
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - name: Checkout
-      uses: actions/checkout@v3    
+      uses: actions/checkout@v3
 
-  dev:
-    if: github.ref_name == 'master'
-    uses: ./.github/workflows/deploy.yaml
-    needs:
-      - build
-    with:
-      repo: libs-snapshot
-      version: ${{ github.ref_name }}
-    secrets:
-      ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-      ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-      GITHUB_USERNAME: ${{ secrets.GH_USER }}
-      GITHUB_PASSWORD: ${{ secrets.GH_TOKEN }}
+    - name: Setup java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '20'
 
-  prod:
-    if: github.ref_type == 'tag'
-    uses: ./.github/workflows/deploy.yaml
-    needs:
-      - build
-    with:
-      repo: libs-releases
-      version: ${{ github.ref_name }}
-    secrets:
-      ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-      ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-      GITHUB_USERNAME: ${{ secrets.GH_USER }}
-      GITHUB_PASSWORD: ${{ secrets.GH_TOKEN }}
+    - name: Gradle build
+      run: ./gradlew clean build
+
+    - name: Publish
+#      if: github.ref_type == 'tag'
+      if: github.ref_name == 'cleanup'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+#        version: ${{ github.ref_name }}
+        version: '0.0.1'
+      run: ./gradlew publish -PJAR_VERSION=${{ inputs.version }}
+

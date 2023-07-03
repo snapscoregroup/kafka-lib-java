@@ -1,4 +1,4 @@
-package lib;
+package com.snapscore.kafkalib;
 
 public class CommonConfigs {
     public static final String BOOTSTRAP_SERVERS_CONFIG = "bootstrap.servers";

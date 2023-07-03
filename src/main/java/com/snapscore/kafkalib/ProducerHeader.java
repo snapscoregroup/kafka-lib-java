@@ -1,4 +1,4 @@
-package lib;
+package com.snapscore.kafkalib;
 
 public interface ProducerHeader {
     String key();

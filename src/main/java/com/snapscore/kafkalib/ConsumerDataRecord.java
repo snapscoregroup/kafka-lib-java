@@ -1,4 +1,4 @@
-package lib;
+package com.snapscore.kafkalib;
 
 /**
  * Creates a record to be received from a specified topic and partition
