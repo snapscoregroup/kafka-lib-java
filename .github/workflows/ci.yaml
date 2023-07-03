@@ -1,6 +1,11 @@
 name: kafka-lib-ci
 
-on: push
+on:
+  push:
+    inputs:
+      version:
+        type: string
+        required: true
 
 jobs:
   build:
@@ -25,8 +30,8 @@ jobs:
       if: github.ref_name == 'cleanup'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-#        version: ${{ github.ref_name }}
-        version: '0.0.1'
       run: ./gradlew publish -PJAR_VERSION=${{ inputs.version }}
+      with:
+        #        version: ${{ github.ref_name }}
+        version: '0.0.1'
 
