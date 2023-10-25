@@ -13,5 +13,6 @@ public class ConsumerConfigurationProperties {
     public static final String SASL_JAAS_CONFIG = "sasl.jaas.config";
     public static final String MAX_PARTITION_FETCH_BYTES_CONFIG = "max.partition.fetch.bytes";
     public static final String FETCH_MAX_BYTES_CONFIG = "fetch.max.bytes";
+    public static final String MAX_POLL_RECORDS_CONFIG = "max.poll.records";
 
 }
