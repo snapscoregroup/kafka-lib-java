@@ -1,4 +1,4 @@
-package lib;
+package com.snapscore.kafkalib;
 
 public class ProducerConfigurationProperties {
     public static final String BOOTSTRAP_SERVERS_CONFIG = CommonConfigs.BOOTSTRAP_SERVERS_CONFIG;

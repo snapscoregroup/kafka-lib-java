@@ -1,4 +1,4 @@
-package lib;
+package com.snapscore.kafkalib;
 
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
